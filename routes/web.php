@@ -20,7 +20,7 @@ Route::get('/', function () {
 //ruta paises
 
 Route::get('paises', function(){
-    $paises=["Colombia" => ["capital" => "bogota", "moneda" => "peso", "poblacion" => 51.6, "ciudades" =>["medellin" , "cali" , "barranquilla"] ] , "Peru" => ["capital" => "lima", "moneda" => "sol", "poblacion" => 32.97, "ciudades" =>["arequipa" , "cusco" , "piura"]], "Paraguay" => ["capital" => "montevideo", "moneda" => "guarani", "poblacion" => 32.97, "ciudades" =>["asuncion" , "encarnacion" , "pilar"]]];
+    $paises=["Colombia" => ["capital" => "Bogotá", "moneda" => "peso", "poblacion" => 51.6, "ciudades" =>["medellin" , "cali" , "barranquilla"] ] , "Peru" => ["capital" => "lima", "moneda" => "sol", "poblacion" => 32.97, "ciudades" =>["arequipa" , "cusco" , "piura"]], "Paraguay" => ["capital" => "montevideo", "moneda" => "guarani", "poblacion" => 32.97, "ciudades" =>["asuncion" , "encarnacion" , "pilar"]]];
     
     //echo "<pre>";
     //var_dump($paises);
