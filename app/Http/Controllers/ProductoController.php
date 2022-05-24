@@ -1,11 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
-
+//dependencias
 use App\Models\Producto;
 use App\Models\Categoria;
 use App\Models\Marca;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ProductoController extends Controller
 {
@@ -43,18 +44,57 @@ class ProductoController extends Controller
      */
     public function store(Request $r)
     {
-        //crear entidad producto:
-        $p = new producto;
-        //asignar valores a los atributos
-        //del nuevo producto
-        $p->nombre = $r->nombre;
-        $p->desc = $r->desc;
-        $p->precio = $r->precio;
-        $p->marca_id = $r->marca;
-        $p->categoria_id = $r->categoria;
-        //grabar el nuevo producto
-        $p->save();
-        echo "producto creado";
+        //definir reglas de validacion
+        $reglas = [
+            "nombre" =>'required|alpha',
+            "desc" =>'required|min:10|max:50',
+            "precio" =>'required|numeric',
+            "marca" => 'required',
+            "categoria" => 'required'
+
+        ];
+        //mensajes personalizados por regla
+        $mensajes =[
+            "required" => "Campo obligatorio",
+            "numeric" => "Solo numeros",
+            "alpha" => "Solo letras"
+        ];
+        //crear el objeto validador
+        $v = Validator::make($r->all(), $reglas, $mensajes);
+
+        //validar datos: metodo false()
+        //metodo fails();
+        //retorna true en caso de validacion fallido
+        //retorna false en caso de validacion correcta
+
+        if($v->fails()){
+            //bloque si la validacion falla
+            //redireccionar al formulario de nuevo:producto
+            return redirect('productos/create')
+                ->withErrors($v)
+                ->withInput();
+        }else{
+            //validacion correcta
+            //crear entidad producto:
+                $p = new producto;
+                //asignar valores a los atributos
+                //del nuevo producto
+                $p->nombre = $r->nombre;
+                $p->desc = $r->desc;
+                $p->precio = $r->precio;
+                $p->marca_id = $r->marca;
+                $p->categoria_id = $r->categoria;
+                //grabar el nuevo producto
+                $p->save();
+        
+                //Redireccionar a la ruta: create 
+                //Llebando datos de sesión;
+                return redirect('productos/create')
+                    ->with('mensaje', 'producto registrado');
+
+        }
+
+        
     }
 
     /**

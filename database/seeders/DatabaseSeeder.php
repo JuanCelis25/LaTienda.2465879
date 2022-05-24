@@ -17,6 +17,6 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         Marca::factory(10)->create();
-        Marca::factory(10)->create();
+        categoria::factory(10)->create();
     }
 }
