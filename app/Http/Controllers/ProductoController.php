@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-//dependencias
+//Dependencias
 use App\Models\Producto;
 use App\Models\Categoria;
 use App\Models\Marca;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -17,7 +18,12 @@ class ProductoController extends Controller
      */
     public function index()
     {
-        echo "aqui va a ir el catalogo de los productos";
+        //seleccion de todos los productos
+        $productos = Producto::all();
+        //mostrar la visat del catalogo
+        //llevando la lista de producto
+        return view('productos.index')
+            ->with('productos', $productos);
     }
 
     /**
@@ -27,13 +33,15 @@ class ProductoController extends Controller
      */
     public function create()
     {
-        //seleccionar categorias y marcas
+        //Seleccionar categorias y Marcas
+
         $marcas = Marca::all();
         $categorias = Categoria::all();
 
+
         return view('productos.new')
-        ->with('marcas' , $marcas)
-        ->with('categorias' , $categorias);
+            ->with('marcas', $marcas)
+            ->with('categorias', $categorias);
     }
 
     /**
@@ -44,58 +52,75 @@ class ProductoController extends Controller
      */
     public function store(Request $r)
     {
-        //definir reglas de validacion
+
+        //Definir Reglas de Validacion
         $reglas = [
-            "nombre" =>'required|alpha',
-            "desc" =>'required|min:10|max:50',
-            "precio" =>'required|numeric',
+            "nombre" => 'required|alpha|unique:productos,nombre',
+            "desc" => 'required|min:3|max:10',
+            "precio" => 'required|numeric',
             "marca" => 'required',
-            "categoria" => 'required'
+            "categoria" => 'required',
+            "imagen" => 'required|image'
 
         ];
-        //mensajes personalizados por regla
-        $mensajes =[
-            "required" => "Campo obligatorio",
-            "numeric" => "Solo numeros",
-            "alpha" => "Solo letras"
+        //Mensajes personalizados por regla
+        $mensajes = [
+            "required" => "Campo Obligatorio",
+            "numeric" => "Solo se permiten Numeros",
+            "alpha" => "Solo se permiten letras",
+            "image" => "tipo de archivo no valida -- cosa no va",
+
         ];
-        //crear el objeto validador
+
+
         $v = Validator::make($r->all(), $reglas, $mensajes);
 
-        //validar datos: metodo false()
-        //metodo fails();
-        //retorna true en caso de validacion fallido
-        //retorna false en caso de validacion correcta
+        var_dump($v->fails());
 
-        if($v->fails()){
-            //bloque si la validacion falla
-            //redireccionar al formulario de nuevo:producto
+        if ($v->fails()) {
+            //Validacion Fallida
+            //redireccionar al formulario de nuevo producto
             return redirect('productos/create')
                 ->withErrors($v)
                 ->withInput();
-        }else{
-            //validacion correcta
-            //crear entidad producto:
-                $p = new producto;
-                //asignar valores a los atributos
-                //del nuevo producto
-                $p->nombre = $r->nombre;
-                $p->desc = $r->desc;
-                $p->precio = $r->precio;
-                $p->marca_id = $r->marca;
-                $p->categoria_id = $r->categoria;
-                //grabar el nuevo producto
-                $p->save();
-        
-                //Redireccionar a la ruta: create 
-                //Llebando datos de sesión;
-                return redirect('productos/create')
-                    ->with('mensaje', 'producto registrado');
+        } else {
 
+            //analizar el objeto file del request
+            //asignar el nombre de la variable segun el archivo
+
+
+
+
+            $nombre_Archivo =  $r->imagen->getClientOriginalName();
+            $archivo = $r->imagen;
+
+            //MOVER EL ARCHIVO A LA CARPETA PUBLIC
+            // var_dump(public_path());
+            $ruta = public_path() . '/img';
+            $archivo->move($ruta, $nombre_Archivo);
+            //Validacion Correcta
+            //crear entidad producto
+
+            $p = new Producto;
+            //asignar valores a atributos
+            $p->nombre = $r->nombre;
+            $p->desc = $r->desc;
+            $p->precio = $r->precio;
+            $p->marca_id = $r->marca;
+            $p->categoria_id = $r->categoria;
+            $p->imagen = $nombre_Archivo;
+
+
+            //Grabar el nuevo producto
+            $p->save();
+
+            //Redireccionar a la ruta : create
+            //Con los datos de sesion
+            return redirect('productos/create')
+                ->with('mensaje', 'Producto registrado');
         }
-
-        
     }
+
 
     /**
      * Display the specified resource.
@@ -105,7 +130,13 @@ class ProductoController extends Controller
      */
     public function show($producto)
     {
-        echo "Aqui va la info del producto cuyo id es: $producto";
+        //echo "Espacio para la informacion del producto con el ID es: $producto";
+        //seleccionar el producto con id
+        $producto = Producto::find($producto);
+        //mostrar vistas de detalles 
+        //llevadole el producto seleccionado
+        return view('productos.details')
+            ->with('producto', $producto);
     }
 
     /**
@@ -116,7 +147,10 @@ class ProductoController extends Controller
      */
     public function edit($producto)
     {
-        echo "Aqui va a ir el formulario de edicion del proyecto cuyo id es: $producto";
+        //echo "Espacio para el formulario de edicion del producto con el ID: $producto";
+
+        //seleccionar el producto con id
+        
     }
 
     /**
