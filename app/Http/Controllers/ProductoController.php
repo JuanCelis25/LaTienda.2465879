@@ -56,7 +56,7 @@ class ProductoController extends Controller
         //Definir Reglas de Validacion
         $reglas = [
             "nombre" => 'required|alpha|unique:productos,nombre',
-            "desc" => 'required|min:3|max:10',
+            "desc" => 'required|min:3|max:50',
             "precio" => 'required|numeric',
             "marca" => 'required',
             "categoria" => 'required',
@@ -68,7 +68,7 @@ class ProductoController extends Controller
             "required" => "Campo Obligatorio",
             "numeric" => "Solo se permiten Numeros",
             "alpha" => "Solo se permiten letras",
-            "image" => "tipo de archivo no valida -- cosa no va",
+            "image" => "tipo de archivo no valida",
 
         ];
 
